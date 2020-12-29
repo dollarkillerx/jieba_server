@@ -1,0 +1,16 @@
+syntax = "proto3";
+package single_jieba;
+
+option go_package = ".;single_jieba";
+
+service SingleJieba {
+  rpc Cut(CutReq) returns (CutResp);
+}
+
+message CutReq {
+  string message = 1;
+}
+
+message CutResp {
+  repeated string word = 1;
+}
