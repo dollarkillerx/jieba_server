@@ -1,4 +1,5 @@
 pub mod server;
+pub mod jieba;
 
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 

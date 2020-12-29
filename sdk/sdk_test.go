@@ -1,22 +1,59 @@
 package sdk
 
 import (
+	"fmt"
+	"github.com/dollarkillerx/async_utils"
 	"log"
 	"testing"
+	"time"
 )
 
 func TestJieba(t *testing.T) {
-	server, err := New("0.0.0.0:8086")
+	server, err := New("0.0.0.0:8085")
 	if err != nil {
 		log.Fatalln(err)
 	}
 
+	now := time.Now()
 	all, err := server.CutAll(r)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	log.Println(all)
 	log.Println(len(all))
+	since := time.Since(now)
+	fmt.Println("耗时: ", since.Milliseconds())
+}
+
+func TestJieba2(t *testing.T) {
+	server, err := New("0.0.0.0:8085")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	over := make(chan bool)
+	poolFunc := async_utils.NewPoolFunc(100, func() {
+		close(over)
+	})
+
+	for  {
+		poolFunc.Send(func() {
+			now := time.Now()
+			_, err := server.CutAll(r)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			//log.Println(all)
+			//log.Println(len(all))
+			since := time.Since(now)
+			if since > 200 {
+				fmt.Println("耗时: ", since.Milliseconds())
+			}
+		})
+	}
+	poolFunc.Over()
+
+	<-over
 }
 
 var r = `　【“十四五” 开新局】
